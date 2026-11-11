@@ -4,7 +4,7 @@
 # goodluck building sir
 # gore ubuntu 25.10 error fix: sudo ln -s /lib/x86_64-linux-gnu/libxml2.so.16 /lib/x86_64-linux-gnu/libxml2.so.2
 #edit the zyc clang directory name accordingly to ur toolchain.
-export TC=/home/vigus/zyc-clang
+export TC=/home/lumi/zyc-clang
 
 export CROSS_COMPILE=$TC/bin/aarch64-linux-gnu-
 export LD=$TC/bin/ld.lld
@@ -44,12 +44,15 @@ esac
 cat $CFGDIR/mt6768_slm_defconfig $CFGDIR/"$DEVICE".config $CFGDIR/battery.config > $CFGDIR/compiled_defconfig
 
 #selinux and gpu driver control
-#buildable: mali bifrost r25p0, mali valhall r32p1, mali avalon r49p1[WIP]
+#buildable: mali bifrost r25p0, mali bifrost r25p0, mali avalon r49p1[WIP]
 echo '
-# CONFIG_ALWAYS_ENFORCE is not set
-CONFIG_ALWAYS_PERMISSIVE=y
+CONFIG_ALWAYS_ENFORCE=y
+# CONFIG_ALWAYS_PERMISSIVE is not set
 
-CONFIG_MTK_GPU_VERSION="mali valhall r32p1"
+CONFIG_MTK_GPU_VERSION="mali bifrost r25p0"
+
+# CONFIG_DEBUG_INFO_BTF is not set
+# CONFIG_DEBUG_INFO_BTF_MODULES is not set
 ' >> "$CFGDIR/compiled_defconfig"
 
 make -C $(pwd) O=$(pwd)/out -j$(nproc) compiled_defconfig
