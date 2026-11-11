@@ -8,7 +8,7 @@
 # If no device is provided, the script asks for one interactively.
 #
 # Environment:
-#   TC   Path to the Clang toolchain (default: $HOME/zyc-clang).
+#   TC   Path to the Clang toolchain (default: ../zyc-clang).
 #
 # Recommended toolchain:
 #   ZyC Clang 14
@@ -34,7 +34,15 @@ esac
 # On Ubuntu 25.10, if libxml2.so.2 is missing, create the compatibility symlink:
 #   sudo ln -s /lib/x86_64-linux-gnu/libxml2.so.16 /lib/x86_64-linux-gnu/libxml2.so.2
 
-TC="${TC:-$HOME/zyc-clang}"
+# The toolchain is expected next to the kernel repository:
+#   kernel_lumirom/zyc-clang
+TC="${TC:-../zyc-clang}"
+
+# Resolve relative paths from the kernel repository root so sub-makes
+# always receive an absolute toolchain path.
+if [ "${TC#/}" = "$TC" ] && [ -d "$SCRIPT_DIR/$TC" ]; then
+    TC="$(cd "$SCRIPT_DIR/$TC" && pwd)"
+fi
 
 if [ ! -x "$TC/bin/clang" ]; then
     echo "error: Clang toolchain not found at $TC" >&2
