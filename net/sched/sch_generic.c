@@ -710,10 +710,6 @@ static void qdisc_destroy(struct Qdisc *qdisc)
 		return;
 	ops = qdisc->ops;
 
-	if (qdisc->flags & TCQ_F_BUILTIN ||
-	    !refcount_dec_and_test(&qdisc->refcnt))
-		return;
-
 #ifdef CONFIG_NET_SCHED
 	qdisc_hash_del(qdisc);
 
