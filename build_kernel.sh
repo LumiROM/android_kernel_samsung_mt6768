@@ -113,11 +113,22 @@ cat "$CFGDIR/mt6768_slm_defconfig" "$CFGDIR/$DEVICE.config" "$CFGDIR/battery.con
 # SELinux and GPU driver configuration.
 # Supported GPU drivers: mali bifrost r25p0, mali valhall r32p1,
 # mali avalon r49p1 (work in progress).
-cat >> "$CFGDIR/compiled_defconfig" <<'EOF'
+#
+# LumiROM ships valhall r32p1 on the A32 family only. kbase and the userspace
+# blob validate each other, so that build has to be paired with the matching
+# vendor libraries and with a DTB whose GPU node exposes "arm,mali-valhall".
+# Every other device stays on the stock driver.
+if [ "${DEVICE:-}" = "a32" ]; then
+    GPU_VERSION="${GPU_VERSION:-mali valhall r32p1}"
+else
+    GPU_VERSION="${GPU_VERSION:-mali bifrost r25p0}"
+fi
+
+cat >> "$CFGDIR/compiled_defconfig" <<EOF
 CONFIG_ALWAYS_ENFORCE=y
 # CONFIG_ALWAYS_PERMISSIVE is not set
 
-CONFIG_MTK_GPU_VERSION="mali bifrost r25p0"
+CONFIG_MTK_GPU_VERSION="$GPU_VERSION"
 
 # BTF is disabled because pahole 1.32 cannot generate BTF for this 4.14 kernel.
 # CONFIG_DEBUG_INFO_BTF is not set
